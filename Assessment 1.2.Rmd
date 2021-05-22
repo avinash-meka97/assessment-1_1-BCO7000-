@@ -1,0 +1,78 @@
+---
+title: "Assessment 1.2"
+author: "Avinash Meka (s4648886)"
+date: "22/05/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Data wrangling
+
+#loading packages `tidyverse and skimr`.
+```{r}
+library(tidyverse)
+library(skimr)
+```
+
+#importing csv file into variable `fastfood`and displaying variable types using `skim`.
+```{r}
+fastfood<-read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
+
+fastfood%>%skim()
+```
+
+#number of observations for each restaurant.
+```{r}
+fastfood%>%count(restaurant)
+```
+
+#calculating average number of calories for each restaurant.
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  summarise(average_calories=mean(calories))%>%
+  ungroup()
+```
+
+#adding `average_calories` to dataset.
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  mutate(average_calories=mean(calories))%>%
+  ungroup()
+```
+
+#displaying `total_fat` using `geom_point`.
+#The `geom_point` is used to create scatterplots. The scatterplots is most useful for displaying the relationship between two variables. As we are ploting total fat of different restaurants geom_point provides better data visualisation.
+
+```{r}
+fastfood%>%
+  ggplot(aes(restaurant,total_fat))+
+  geom_point()
+```
+
+#displaying count of observations per each type of restaurant.
+```{r}
+fastfood%>%
+  count(restaurant)
+```
+
+#adding variable `max_total_fat` to dataset.
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  mutate(max_total_fat=max(total_fat))%>%
+  ungroup()
+```
+
+#using `geom_point` for Mcdonalds to plot sugar variable against protein.
+```{r}
+fastfood%>%
+  filter(restaurant=="Mcdonalds")%>%
+  ggplot(aes(sugar,protein))+
+  geom_point()
+```
+
