@@ -1,0 +1,100 @@
+---
+title: "Assessment 1.3"
+author: "Avinash Meka (s4648886)"
+date: "29/05/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##Data viz and wrangling
+
+
+#Reading the libraries tidyverse, skimr and scales
+```{r}
+library(tidyverse)
+library(skimr)
+library(scales)
+```
+
+
+#Reading the dataset fastfood
+```{r}
+fastfood<-read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
+```
+
+
+#identifying  the different types of variables using skimr packages.In the recorded data every variable has a pre-defined data type, along with the specific range mentioned with min and max(=variability).
+#Salads,x column can be removed from the data set as they are unused.
+```{r}
+summary(fastfood)
+fastfood%>%skim()
+```
+
+
+#changing the data types of restaurant with as_factor()and defining a class to display the changed data types to factors.
+```{r}
+fastfood$restaurant<-as_factor(fastfood$restaurant)
+class(fastfood$restaurant)
+```
+
+
+#replacing NA with 0 in the dataset fastfood.
+```{r}
+fastfood[is.na(fastfood)] <- 0
+```
+
+
+#cut_number makes n groups with the number of observations. 
+#Creating a new variable caloies_type and saving it to the dataset and using cut_number function assigning labels and making them ordered results.
+```{r}
+fastfood<-fastfood%>%
+  mutate(calories_type=cut_number(calories,3,
+                                  labels=c("low","medium","high"),ordered_results=TRUE))
+```
+
+
+#Data viz for calories_type in food items for each type of restaurant. Using facets and theme.
+```{r}
+fastfood%>%
+  ggplot(aes(calories_type))+
+  geom_bar()+
+  facet_wrap(~restaurant)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+#Creating another new variable trans_fat_percentage to calculate the percentage of trans_fat and total_fat.
+```{r}
+fastfood<-fastfood%>%mutate(trans_fat_percent = trans_fat/total_fat)
+```
+
+
+#Data viz for trans_fat` in food items for each type of restaurant. Using facets and themes.
+```{r}
+fastfood%>%
+  ggplot(aes(trans_fat))+
+  geom_dotplot()+
+facet_wrap(~ restaurant)  +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+#the average (mean) total_fat for each type of restaurant.
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  summarise(mean(calories))%>%
+  ungroup()
+```
+
+
+#dataviz that allow to compare different restaurants and mean(total_fat)
+```{r}
+fastfood%>%
+  ggplot(aes(mean(calories) ))+
+  geom_bar()
+```
